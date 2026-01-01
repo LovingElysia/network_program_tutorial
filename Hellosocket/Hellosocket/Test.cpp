@@ -11,7 +11,7 @@ int main()
 	WORD ver{ MAKEWORD(2,2) }; //°æ±¾ºÅ
 	WSADATA data;
 	WSAStartup(ver, &data);    //¿ªÆôÌ×½Ó×Ö¿â
-
+	 
 	WSACleanup();       //¹Ø±ÕÌ×½Ó×Ö¿â
 	return 0;
 }
