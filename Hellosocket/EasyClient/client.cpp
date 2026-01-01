@@ -12,7 +12,7 @@ int main()
 	WSAStartup(ver, &data);    //开启套接字库
 
 	//创建套接字
-	SOCKET _sock{ socket(AF_INET,SOCK_STREAM,0) }; 
+	SOCKET _sock{ socket(AF_INET,SOCK_STREAM,0) };
 	if (INVALID_SOCKET == _sock) {
 		printf("错误,建立socket失败\n");
 	}
@@ -23,7 +23,7 @@ int main()
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons(3456);
 	serveraddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
-	
+
 	int ret{ connect(_sock, (sockaddr*)&serveraddr, sizeof(serveraddr)) };
 
 	if (SOCKET_ERROR == ret) {
@@ -31,16 +31,19 @@ int main()
 	}
 	else { printf("建立连接成功\n"); }
 
-	char recvbuf[256]{};
-	int n_len{ recv(_sock, recvbuf, 256, 0) };
-	
-	if (n_len > 0) {
-		printf("接收到数据: %s \n", recvbuf);
+	while (true) {
+		char msgbuf[256]{};
+		scanf("%s", msgbuf);
+		if (0 == strcmp(msgbuf, "exit")) {
+			break;
+		}
+		send(_sock, msgbuf, 256, 0);
+		
+		char rcvbuf[256]{};
+		int n_len{ recv(_sock,rcvbuf,sizeof(rcvbuf),0) };
+		printf("%s", rcvbuf);
 	}
 	closesocket(_sock);
-
-	getchar();
-
 	WSACleanup();       //关闭套接字库
 	return 0;
 }

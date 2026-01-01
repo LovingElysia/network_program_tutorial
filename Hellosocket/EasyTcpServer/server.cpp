@@ -36,18 +36,40 @@ int main()
 	
 	sockaddr_in clientaddr;
 	int len{ sizeof(clientaddr) };
-	char msgbuf[]{ "Hello,I am server" };
+
+	
 
 	while (true) {
 
+		bool flag{ false };
 		SOCKET client_fd{ accept(_sock,(sockaddr*)&clientaddr,&len) };
 		if (client_fd == INVALID_SOCKET) {
 			printf("错误,接收到无效的客户端\n");
 		}
-		else { printf("接收到客户端 IP=%s\n",inet_ntoa(clientaddr.sin_addr)); }
-
-
-		send(client_fd, msgbuf, strlen(msgbuf) + 1, 0);  //strlen不会统计结束符
+		else { 
+			printf("接收到客户端 IP=%s\n", inet_ntoa(clientaddr.sin_addr));
+			flag = true;
+		}
+		while (flag) {
+			char recv_buf[256]{};
+			int n_len{ recv(client_fd,recv_buf,256,0) };
+			if (n_len <= 0) {
+				printf("客户端已退出\n");
+				flag = false;
+			}
+			else if (0 == strcmp(recv_buf, "getName")) {
+				char msgbuf[]{ "Eden\n" };
+				send(client_fd, msgbuf, sizeof(msgbuf), 0);
+			}
+			else if (0 == strcmp(recv_buf, "getAge")) {
+				char msgbuf[]{ "18\n" };
+				send(client_fd, msgbuf, sizeof(msgbuf), 0);
+			}
+			else {
+				char msgbuf[]{ "???.\n" };
+				send(client_fd, msgbuf, sizeof(msgbuf), 0);
+			}
+		}
 	}
 	closesocket(_sock);
 
